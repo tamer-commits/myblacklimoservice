@@ -1,29 +1,68 @@
 'use client';
-import { useMemo, useState } from 'react';
-const fleet=[
- ['Mercedes-Benz S-Class','Up to 3 passengers','First Class','https://www.imperialride.com/images/2025/04/luxury-chauffeur-sesrvice-london.jpg'],
- ['Mercedes-Benz V-Class','Up to 7 passengers','Executive Van','https://signaturechauffeurs.com.au/images/2022/09/29/van1.jpg'],
- ['Audi Q7','Up to 5 passengers','Luxury SUV','https://image.webmotors.com.br/_fotos/anunciousados/gigante/2026/202602/20260226/audi-q7-3-0-55-tfsi-gasolina-quattro-sline-tiptronic-wmimagem14245876642.webp'],
- ['Mercedes-Benz Sprinter','Groups & events','Premium Group','https://res.cloudinary.com/db54ocawg/image/upload/v1721722046/photos/aaddsneofgjyntfljd1o.jpg']
+
+const amenities=[
+ ['Still & sparkling water','Chilled and ready for every journey'],
+ ['Fresh mints','A small touch of first-class hospitality'],
+ ['Premium comfort','Immaculate, quiet and climate controlled'],
+ ['Charging throughout','USB and phone charging within easy reach'],
+ ['Unlimited Wi-Fi','Stay connected while you travel'],
+ ['Phone holders','Hands-free convenience for every passenger'],
+ ['Premium surround sound','Rich, clear audio throughout the cabin'],
+ ['Live journey sharing','Share your journey with loved ones when available']
 ];
-const services=[['Airport Transfers','Flight monitoring, meet & greet, luggage assistance and considered airport pickups.'],['Corporate Travel','Executive transport for meetings, roadshows and demanding schedules.'],['Weddings','Immaculate black vehicles and coordinated arrivals for your most important day.'],['VIP & Events','Discreet, polished transport for artists, executives, dignitaries and private guests.'],['Hourly Charter','Keep your chauffeur and vehicle at your disposal for as long as you need.'],['Sydney & NSW','Bespoke transfers, private touring and long-distance chauffeur journeys.']];
+
+const services=[
+ ['Airport Transfers','Reliable, punctual and flight-aware'],
+ ['Corporate Travel','Discreet, polished and schedule focused'],
+ ['Weddings','Elegant arrivals for an important day'],
+ ['VIP & Events','Private transport with presence and discretion']
+];
+
 export default function Home(){
- const [vehicle,setVehicle]=useState('V-Class'),[km,setKm]=useState(25),[child,setChild]=useState(0),[baby,setBaby]=useState(0),[booster,setBooster]=useState(0),[meet,setMeet]=useState(false),[returnTrip,setReturnTrip]=useState(false);
- const [origin,setOrigin]=useState(''),[destination,setDestination]=useState(''),[date,setDate]=useState(''),[time,setTime]=useState('');
- const [liveQuote,setLiveQuote]=useState(null),[quoteStatus,setQuoteStatus]=useState(''),[bookingOpen,setBookingOpen]=useState(false),[bookingStatus,setBookingStatus]=useState(''),[name,setName]=useState(''),[email,setEmail]=useState(''),[phone,setPhone]=useState('');
- const estimate=useMemo(()=>{const base={'S-Class':105,'V-Class':95,'Audi Q7':100,'Sprinter':145}[vehicle],rate={'S-Class':3.35,'V-Class':3.05,'Audi Q7':3.2,'Sprinter':4.1}[vehicle];let total=Math.max(base,base+Number(km)*rate)+Number(child)*15+Number(baby)*20+Number(booster)*10+(meet?20:0);return returnTrip?total*1.9:total},[vehicle,km,child,baby,booster,meet,returnTrip]);
- async function calculateRoute(){setQuoteStatus('Calculating your route…');setLiveQuote(null);try{const r=await fetch('/api/quote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({origin,destination,vehicle,child,baby,booster,meet,returnTrip})});const d=await r.json();if(!r.ok) throw new Error(d.error);setLiveQuote(d);setKm(d.km);setQuoteStatus(`${d.km} km · approximately ${d.minutes} min`)}catch(e){setQuoteStatus(e.message||'Live route pricing is not available yet.')} }
- async function submitBooking(e){e.preventDefault();setBookingStatus('Sending your request…');try{const r=await fetch('/api/booking',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,phone,origin,destination,date,time,vehicle,child,baby,booster,meet,returnTrip,quotedFare:liveQuote?.fare||Math.round(estimate)})});const d=await r.json();if(!r.ok) throw new Error(d.error);setBookingStatus(`Request received. Reference ${d.reference}. We will confirm your chauffeur shortly.`)}catch(e){setBookingStatus(e.message||'Unable to submit your request. Please call us.')}}
- const fare=liveQuote?.fare||Math.round(estimate);
- return <main>
- <div className="topbar"><span>◆ Sydney, Australia</span><a href="mailto:info@myblacklimoservice.com">info@myblacklimoservice.com</a><a href="tel:+61420770707">+61 420 770 707</a><span>24/7 Professional Chauffeur Service</span></div>
- <header><a className="brand" href="#"><b>MB</b> MY BLACK <span>LIMO SERVICE</span></a><nav><a href="#services">Services</a><a href="#fleet">Fleet</a><a href="#experience">Experience</a><a href="#quote">Pricing</a><a href="#contact">Contact</a></nav><a className="primary mini" href="#quote">GET A QUOTE</a></header>
- <section className="hero"><div className="shade"/><div className="heroCopy"><p className="eyebrow">SYDNEY · PRIVATE CHAUFFEUR</p><h1>Elevate every<br/><em>journey.</em></h1><p>Luxury vehicles. Professional chauffeurs. Impeccable service for airport, corporate, VIP, wedding and private travel.</p><div className="actions"><a className="primary" href="#quote">GET AN INSTANT QUOTE →</a><a className="outline" href="#fleet">EXPLORE OUR FLEET</a></div></div><div className="heroFleet">{[fleet[3],fleet[1],fleet[0],fleet[2]].map(f=><img key={f[0]} src={f[3]} alt={`Black ${f[0]}`}/>)}</div><div className="trust"><span><b>PREMIUM FLEET</b>Luxury black vehicles</span><span><b>PROFESSIONAL</b>Experienced chauffeurs</span><span><b>PRIVATE SERVICE</b>Discreet & considered</span><span><b>24/7 SERVICE</b>Pre-booked journeys</span></div></section>
- <section id="quote" className="quote"><div className="quoteTitle"><p className="eyebrow">INSTANT QUOTE</p><h2>Plan your journey</h2><p className="muted">Enter your journey details for a preliminary fare. When live routing is enabled, distance and travel time are calculated automatically.</p></div><div className="routeFields"><label>FROM<input value={origin} onChange={e=>setOrigin(e.target.value)} placeholder="Pickup location"/></label><label>TO<input value={destination} onChange={e=>setDestination(e.target.value)} placeholder="Destination"/></label><label>DATE<input value={date} onChange={e=>setDate(e.target.value)} type="date"/></label><label>TIME<input value={time} onChange={e=>setTime(e.target.value)} type="time"/></label></div><div className="quoteGrid"><label>VEHICLE<select value={vehicle} onChange={e=>{setVehicle(e.target.value);setLiveQuote(null)}}><option>V-Class</option><option>S-Class</option><option>Audi Q7</option><option>Sprinter</option></select></label><label>DISTANCE (KM)<input type="number" min="1" value={km} onChange={e=>{setKm(e.target.value);setLiveQuote(null)}}/></label><label>CHILD SEAT<select value={child} onChange={e=>{setChild(e.target.value);setLiveQuote(null)}}><option value="0">None</option><option value="1">1 (+$15)</option><option value="2">2 (+$30)</option></select></label><label>BABY SEAT<select value={baby} onChange={e=>{setBaby(e.target.value);setLiveQuote(null)}}><option value="0">None</option><option value="1">1 (+$20)</option><option value="2">2 (+$40)</option></select></label><label>BOOSTER<select value={booster} onChange={e=>{setBooster(e.target.value);setLiveQuote(null)}}><option value="0">None</option><option value="1">1 (+$10)</option><option value="2">2 (+$20)</option></select></label></div><div className="toggles"><label><input type="checkbox" checked={meet} onChange={e=>{setMeet(e.target.checked);setLiveQuote(null)}}/> Meet & Greet (+$20)</label><label><input type="checkbox" checked={returnTrip} onChange={e=>{setReturnTrip(e.target.checked);setLiveQuote(null)}}/> Return trip</label></div><div className="quoteActions"><button className="outline button" onClick={calculateRoute} disabled={!origin||!destination}>CALCULATE LIVE ROUTE</button>{quoteStatus&&<span className="status">{quoteStatus}</span>}</div><div className="estimate"><span>{liveQuote?'ROUTE-BASED ESTIMATE':'PRELIMINARY ESTIMATE'}</span><strong>${fare} AUD</strong><button className="primary button" onClick={()=>setBookingOpen(true)}>REQUEST BOOKING →</button></div>{bookingOpen&&<form className="bookingForm" onSubmit={submitBooking}><div><p className="eyebrow">BOOKING REQUEST</p><h3>Reserve your chauffeur</h3><p className="muted">Your request is not confirmed until our team sends confirmation.</p></div><label>NAME<input required value={name} onChange={e=>setName(e.target.value)} placeholder="Your name"/></label><label>EMAIL<input required type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com"/></label><label>PHONE<input required value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Mobile number"/></label><button className="primary button" type="submit">SEND BOOKING REQUEST</button>{bookingStatus&&<p className="status bookingStatus">{bookingStatus}</p>}</form>}</section>
- <section id="services" className="section"><p className="eyebrow">OUR SERVICES</p><div className="sectionHead"><h2>For every occasion.<br/>Never ordinary.</h2><p>From the first greeting to the final door close, every detail is considered.</p></div><div className="cards">{services.map((s,i)=><article key={s[0]}><span>0{i+1}</span><h3>{s[0]}</h3><p>{s[1]}</p><a href="#quote">DISCOVER →</a></article>)}</div></section>
- <section id="fleet" className="fleet"><div className="sectionHead"><div><p className="eyebrow">THE FLEET</p><h2>Black. Immaculate.<br/>Unmistakable.</h2></div><p>A considered selection of Mercedes-Benz and Audi vehicles for comfort, presence and discretion.</p></div><div className="fleetGrid">{fleet.map(f=><article key={f[0]}><div className="carPhoto"><img src={f[3]} alt={f[0]}/><span>{f[2]}</span></div><h3>{f[0]}</h3><p>{f[1]}</p></article>)}</div></section>
- <section id="experience" className="experience"><div><p className="eyebrow">THE EXPERIENCE</p><h2>The details<br/><em>matter.</em></h2><p className="muted">A calm, immaculate cabin prepared before every journey.</p><div className="chauffeurPhoto"><img src="https://m.somewheregood.com/media/brisbanes-ultimate-chauffeur-airport-arrival-experience-d363-119938P5-2.jpg" alt="Professional chauffeur opening a luxury vehicle"/></div></div><div className="amenities"><div><b>01</b><h3>Still & sparkling water</h3><p>Complimentary chilled refreshments presented in every vehicle.</p></div><div><b>02</b><h3>Fresh mints</h3><p>A small finishing touch, always within reach.</p></div><div><b>03</b><h3>Music, your way</h3><p>Premium audio available, with the cabin quiet by default.</p></div><div><b>04</b><h3>Professional chauffeurs</h3><p>Discreet, punctual and impeccably presented.</p></div></div></section>
- <section className="cta"><p className="eyebrow">YOUR JOURNEY, ELEVATED</p><h2>Wherever you're going,<br/><em>arrive beautifully.</em></h2><a className="primary" href="#quote">BOOK YOUR CHAUFFEUR</a></section>
- <footer id="contact"><div className="brand"><b>MB</b> MY BLACK <span>LIMO SERVICE</span></div><div><b>CONTACT</b><a href="tel:+61420770707">+61 420 770 707</a><a href="mailto:info@myblacklimoservice.com">info@myblacklimoservice.com</a></div><div><b>SERVICES</b><span>Airport · Corporate · VIP</span><span>Weddings · Hourly · NSW</span></div><div><b>LEGAL</b><a href="/privacy">Privacy Policy</a><a href="/terms">Terms & Conditions</a><span>ABN 14 106 640 832</span></div><small>© 2026 My Black Limo Service. Sydney, Australia.</small></footer>
+ return <main className="luxuryHome">
+  <header className="luxHeader">
+   <a className="luxBrand" href="/"><span className="crest">MB</span><span><b>MBLS</b><small>MY BLACK LIMO SERVICE</small></span></a>
+   <nav><a href="#experience">Experience</a><a href="#services">Services</a><a href="#fleet">Fleet</a><a href="#contact">Contact</a></nav>
+   <div className="headerActions"><a href="tel:+61420770707">+61 420 770 707</a><a className="goldButton" href="/quote" target="_blank">BOOK NOW</a></div>
+  </header>
+
+  <section className="luxHero">
+   <img className="heroBg" src="https://www.imperialride.com/images/2025/04/luxury-chauffeur-sesrvice-london.jpg" alt="Luxury black Mercedes chauffeur service"/>
+   <div className="heroVeil"/>
+   <div className="luxHeroCopy">
+    <p className="goldKicker">SYDNEY'S PRIVATE CHAUFFEUR SERVICE</p>
+    <h1>LUXURY<br/>CHAUFFEUR<br/>SERVICE</h1>
+    <p className="heroLine">Sophistication. Discretion. Excellence.</p>
+    <p className="heroSub">First-class chauffeur travel with a focus on reliability, presentation and an exceptional in-car experience.</p>
+    <a className="goldButton heroButton" href="/quote" target="_blank">BOOK YOUR RIDE →</a>
+   </div>
+  </section>
+
+  <section id="experience" className="experienceBand">
+   <p className="sectionKicker">EXPERIENCE THE DIFFERENCE</p>
+   <div className="amenityRow">{amenities.map((a,i)=><article key={a[0]}><span>{String(i+1).padStart(2,'0')}</span><h3>{a[0]}</h3><p>{a[1]}</p></article>)}</div>
+  </section>
+
+  <section className="imageStory" id="fleet">
+   <article className="storyCard"><img src="https://signaturechauffeurs.com.au/images/2022/09/29/van1.jpg" alt="Luxury Mercedes V-Class"/><div><p className="goldKicker">TRAVEL IN STYLE</p><h2>Luxury that begins before you arrive.</h2><p>Beautifully presented black vehicles, spacious cabins and a calm environment prepared for every passenger.</p></div></article>
+   <article className="storyCard"><img src="https://m.somewheregood.com/media/brisbanes-ultimate-chauffeur-airport-arrival-experience-d363-119938P5-2.jpg" alt="Professional chauffeur service"/><div><p className="goldKicker">PROFESSIONAL & RELIABLE</p><h2>A driver you can depend on.</h2><p>Punctual, discreet and professionally presented, with every journey planned around your time and comfort.</p></div></article>
+   <article className="storyCard"><img src="https://res.cloudinary.com/db54ocawg/image/upload/v1721722046/photos/aaddsneofgjyntfljd1o.jpg" alt="Premium luxury vehicle interior"/><div><p className="goldKicker">FIRST-CLASS EXPERIENCE</p><h2>Every detail considered.</h2><p>Cold water, fresh mints, Wi-Fi, charging, phone holders and premium sound create a cabin designed around the passenger.</p></div></article>
+  </section>
+
+  <section id="services" className="commitment">
+   <p className="sectionKicker">YOUR JOURNEY. OUR COMMITMENT.</p>
+   <h2>Private transport with the standard of a luxury hotel.</h2>
+   <p className="commitLead">From airport transfers to corporate travel, weddings and private events, we deliver a composed and dependable experience from door to door.</p>
+   <div className="serviceRow">{services.map(s=><article key={s[0]}><h3>{s[0]}</h3><p>{s[1]}</p></article>)}</div>
+   <div className="quoteStrip"><div><span>GET AN INSTANT QUOTE</span><small>Fast. Easy. No obligation.</small></div><a className="goldButton" href="/quote" target="_blank">GET QUOTE & VIEW MAP →</a></div>
+  </section>
+
+  <footer id="contact" className="luxFooter">
+   <div className="luxBrand"><span className="crest">MB</span><span><b>MBLS</b><small>MY BLACK LIMO SERVICE</small></span></div>
+   <div><b>CONTACT</b><a href="tel:+61420770707">+61 420 770 707</a><a href="mailto:info@myblacklimoservice.com">info@myblacklimoservice.com</a><span>Sydney, Australia</span></div>
+   <div><b>QUICK LINKS</b><a href="#services">Services</a><a href="#fleet">Fleet</a><a href="/quote" target="_blank">Booking</a></div>
+   <div><b>LEGAL</b><a href="/privacy">Privacy Policy</a><a href="/terms">Terms & Conditions</a><span>ABN 14 106 640 832</span></div>
+   <small>© 2026 My Black Limo Service. All rights reserved.</small>
+  </footer>
  </main>
 }
