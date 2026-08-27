@@ -1,6 +1,7 @@
 'use client';
-import { HERO_IMAGE } from './heroData';
+import heroMaster from '../mbls-homepage-master.png';
 
+const HERO_IMAGE = heroMaster.src;
 const amenities=[
   ['💧','Still & sparkling water','Chilled and ready'],
   ['✦','Fresh mints','First-class hospitality'],
