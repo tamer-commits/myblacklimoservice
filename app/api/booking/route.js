@@ -1,4 +1,8 @@
 import { NextResponse } from 'next/server';
+import { dbConfigured, insertBooking } from '../../../lib/db';
+import { runDispatchForBooking, sendCustomerBookingConfirmation } from '../../../lib/dispatch';
+import { sydneyLocalToUtc } from '../../../lib/time';
+
 function clean(v,max=500){return String(v??'').trim().slice(0,max)}
 async function createSquareCheckout(booking){
  const token=process.env.SQUARE_ACCESS_TOKEN,locationId=process.env.SQUARE_LOCATION_ID;
@@ -10,6 +14,39 @@ async function createSquareCheckout(booking){
  const d=await r.json(); if(!r.ok) throw new Error(d.errors?.[0]?.detail||'Square checkout could not be created.');
  return d.payment_link?.url||d.payment_link?.long_url||null;
 }
+
+// Persists the booking and kicks off the driver/customer notification
+// workflow. Runs after the response-critical Square step and is entirely
+// best-effort: if Postgres isn't provisioned yet (dbConfigured() === false)
+// or anything here throws, the booking request itself still succeeds exactly
+// as it did before — this only adds capability, it never removes it.
+async function persistAndDispatch(booking){
+ if(!dbConfigured()) return null;
+ try{
+  const pickupAt = sydneyLocalToUtc(booking.date, booking.time);
+  const row = await insertBooking({
+   reference: booking.reference,
+   name: booking.name,
+   email: booking.email,
+   phone: booking.phone,
+   origin: booking.origin,
+   destination: booking.destination,
+   pickupAt,
+   vehicle: booking.vehicle,
+   passengers: booking.passengers,
+   notes: booking.notes,
+   quotedFare: booking.quotedFare,
+   status: booking.status,
+  });
+  await sendCustomerBookingConfirmation(row);
+  const results = await runDispatchForBooking(row);
+  return { bookingId: row.id, results };
+ }catch(e){
+  console.error('PERSIST_AND_DISPATCH_FAILED', booking.reference, e.message);
+  return { error: e.message };
+ }
+}
+
 export async function POST(req){
  try{
   const raw=await req.json();
@@ -23,6 +60,9 @@ export async function POST(req){
   try{paymentUrl=await createSquareCheckout(booking)}catch(e){paymentError=e.message;console.error('SQUARE_CHECKOUT_ERROR',reference,e)}
   if(!paymentUrl) booking.status='AWAITING_MANUAL_CONFIRMATION';
   console.log('BOOKING_REQUEST',booking);
+  const dispatch = await persistAndDispatch(booking);
+  if (dispatch?.error) console.error('DISPATCH_SUMMARY_ERROR', reference, dispatch.error);
+  else if (dispatch) console.log('DISPATCH_SUMMARY', reference, dispatch.results?.map(r=>`${r.action}:${r.ok}`).join(', '));
   return NextResponse.json({ok:true,reference,status:booking.status,amount:b.quotedFare,currency:'AUD',paymentUrl,paymentReady:Boolean(paymentUrl),paymentError:paymentUrl?null:paymentError,message:paymentUrl?'Booking created. Continue to secure payment to confirm your request.':'Your booking request has been received. We will contact you to confirm it.'});
  }catch(e){console.error(e);return NextResponse.json({error:'Unable to submit booking request.'},{status:500});}
 }
