@@ -1,0 +1,21 @@
+name: Booking dispatch cron
+
+# Vercel's Hobby plan only allows a Vercel Cron job to run once per day, which
+# is nowhere near enough for the 24h/90m/75m/60m driver checkpoints. This
+# workflow substitutes for Vercel Cron at no extra cost: it just hits the
+# dispatch endpoint every 5 minutes. Requires a repository secret named
+# CRON_SECRET with the same value as the CRON_SECRET env var set in Vercel.
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping-dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call /api/cron/dispatch
+        run: |
+          curl -fsS -X GET "https://www.myblacklimoservice.com/api/cron/dispatch" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

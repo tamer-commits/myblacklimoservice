@@ -2,11 +2,12 @@ import { NextResponse } from 'next/server';
 import { dbConfigured, getUpcomingBookings } from '../../../../lib/db';
 import { runDispatchForBooking } from '../../../../lib/dispatch';
 
-// Vercel Cron hits this on a schedule (see vercel.json — every 5 minutes).
-// Vercel automatically sends `Authorization: Bearer $CRON_SECRET` on cron
-// invocations once CRON_SECRET is set as an env var, which is what we check
-// below; until that var is added this route is intentionally left open so
-// dispatch can be tested manually during setup.
+// Hit on a schedule by .github/workflows/dispatch-cron.yml (every 5 minutes)
+// rather than Vercel Cron, because Vercel's Hobby plan only allows a cron job
+// to run once per day — nowhere near enough for 24h/90m/75m/60m checkpoints.
+// The workflow sends `Authorization: Bearer <CRON_SECRET>`, which is what we
+// check below; until CRON_SECRET is set this route is intentionally left
+// open so dispatch can be tested manually during setup.
 export const maxDuration = 60;
 
 function authorized(req){
