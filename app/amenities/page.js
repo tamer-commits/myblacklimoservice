@@ -1,4 +1,4 @@
-import amenitiesPremium from '../../mbls-amenities-premium.png';
+import amenitiesPremium from '../../mbls-amenities-premium.jpg';
 
 const amenities=[
 ['water','Still & Sparkling Water','Complimentary premium still and sparkling water to keep you refreshed throughout your journey. Our presentation can include recognised premium choices such as Evian and San Pellegrino, subject to vehicle stock.'],
