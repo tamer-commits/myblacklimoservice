@@ -3,6 +3,7 @@ import sclassImg from '../mbls-fleet-sclass-full.jpg';
 import q7Img from '../mbls-fleet-q7-full.jpg';
 import sprinterImg from '../mbls-fleet-sprinter-full.jpg';
 import amenitiesStrip from '../mbls-amenities-strip.png';
+import { HERO_IMAGE } from './heroData';
 const amenityHotspots=[
   ['water','/amenities#water','0%','16.86%',false],
   ['mints','/amenities#mints','16.86%','10.48%',false],
@@ -21,6 +22,9 @@ const fleetTiles=[
 ];
 const services=[ ['Airport Transfers','/services#airport-transfers'],['VIP Transfers','/services#vip-transfers'],['Weddings','/services#weddings'],['Private Charter','/services#private-charter'],['Corporate Travel','/services#corporate-travel'],['Events & Occasions','/services#events'],['School Formals','/services#formal'],['As Directed','/services#as-directed'],['Women for Women','/services#women-for-women'] ];
 export default function Home(){return <main className="home masterHomepage">
+  <div className="masterTop">
+    <img className="masterImage" src={HERO_IMAGE} alt="My Black Limo Service fleet — Mercedes-Benz and Audi vehicles on Sydney Harbour" width={900} height={386} loading="eager" />
+  </div>
   <section className="heroFleet" aria-label="My Black Limo Service — our fleet">
     <div className="heroFleetText">
       <p className="goldKicker">SYDNEY'S MOST TRUSTED</p>
