@@ -13,7 +13,7 @@ const amenityHotspots=[
 const services=[ ['Airport Transfers','/services#airport-transfers'],['VIP Transfers','/services#vip-transfers'],['Weddings','/services#weddings'],['Private Charter','/services#private-charter'],['Corporate Travel','/services#corporate-travel'],['Events & Occasions','/services#events'],['School Formals','/services#formal'],['As Directed','/services#as-directed'],['Women for Women','/services#women-for-women'] ];
 export default function Home(){return <main className="home masterHomepage">
   <div className="masterTop">
-    <img className="masterImage" src={HERO_IMAGE} alt="My Black Limo Service fleet — Mercedes-Benz and Audi vehicles on Sydney Harbour" width={800} height={343} loading="eager" />
+    <img className="masterImage" src={HERO_IMAGE} alt="My Black Limo Service fleet — Mercedes-Benz and Audi vehicles on Sydney Harbour" width={1536} height={512} loading="eager" />
   </div>
   <section className="heroFleet" aria-label="My Black Limo Service">
     <div className="heroFleetText">
