@@ -1,7 +1,3 @@
-import vclassImg from '../mbls-fleet-vclass-full.jpg';
-import sclassImg from '../mbls-fleet-sclass-full.jpg';
-import q7Img from '../mbls-fleet-q7-full.jpg';
-import sprinterImg from '../mbls-fleet-sprinter-full.jpg';
 import amenitiesStrip from '../mbls-amenities-strip.png';
 import { HERO_IMAGE } from './heroData';
 const amenityHotspots=[
@@ -14,18 +10,12 @@ const amenityHotspots=[
   ['sound','/amenities#sound','73.76%','12.37%',false],
   ['tracking','/amenities#tracking','86.13%','13.87%',false]
 ];
-const fleetTiles=[
-  ['Mercedes-Benz V-Class',vclassImg],
-  ['Mercedes-Benz S-Class',sclassImg],
-  ['Audi Q7',q7Img],
-  ['Mercedes-Benz Sprinter',sprinterImg]
-];
 const services=[ ['Airport Transfers','/services#airport-transfers'],['VIP Transfers','/services#vip-transfers'],['Weddings','/services#weddings'],['Private Charter','/services#private-charter'],['Corporate Travel','/services#corporate-travel'],['Events & Occasions','/services#events'],['School Formals','/services#formal'],['As Directed','/services#as-directed'],['Women for Women','/services#women-for-women'] ];
 export default function Home(){return <main className="home masterHomepage">
   <div className="masterTop">
-    <img className="masterImage" src={HERO_IMAGE} alt="My Black Limo Service fleet — Mercedes-Benz and Audi vehicles on Sydney Harbour" width={900} height={386} loading="eager" />
+    <img className="masterImage" src={HERO_IMAGE} alt="My Black Limo Service fleet — Mercedes-Benz and Audi vehicles on Sydney Harbour" width={800} height={343} loading="eager" />
   </div>
-  <section className="heroFleet" aria-label="My Black Limo Service — our fleet">
+  <section className="heroFleet" aria-label="My Black Limo Service">
     <div className="heroFleetText">
       <p className="goldKicker">SYDNEY'S MOST TRUSTED</p>
       <h1>MY BLACK LIMO SERVICE</h1>
@@ -33,9 +23,6 @@ export default function Home(){return <main className="home masterHomepage">
       <p className="heroFleetCopy">Premium chauffeur travel with meticulous presentation, exceptional comfort and reliability you can depend on.</p>
       <a className="goldButton" href="/quote">BOOK YOUR RIDE →</a>
       <div className="heroFleetChecks"><span>✓ Professional Drivers</span><span>✓ Punctual</span><span>✓ Discreet</span></div>
-    </div>
-    <div className="heroFleetGrid">
-      {fleetTiles.map(([label,img])=><img key={label} src={img.src} width={img.width} height={img.height} alt={label} loading="eager" />)}
     </div>
   </section>
   <section className="amenitiesStrip" aria-label="Complimentary amenities">
@@ -45,6 +32,7 @@ export default function Home(){return <main className="home masterHomepage">
   <section className="homeLower">
     <div className="lowerServices">
       <h2>OUR SERVICES</h2>
+      <p className="lowerServicesSub">Every journey, tailored to you.</p>
       <div className="serviceLinks">{services.map(([label,href])=><a key={label} href={href} target="_blank" rel="noopener noreferrer">{label}</a>)}</div>
       <a className="homeOutline" href="/services" target="_blank" rel="noopener noreferrer">VIEW ALL SERVICES</a>
     </div>
