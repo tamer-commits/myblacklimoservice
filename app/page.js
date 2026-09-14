@@ -14,8 +14,6 @@ const services=[ ['Airport Transfers','/services#airport-transfers'],['VIP Trans
 export default function Home(){return <main className="home masterHomepage">
   <div className="masterTop">
     <img className="masterImage" src={HERO_IMAGE} alt="My Black Limo Service fleet — Mercedes-Benz and Audi vehicles on Sydney Harbour" width={1536} height={512} loading="eager" />
-  </div>
-  <section className="heroFleet" aria-label="My Black Limo Service">
     <div className="heroFleetText">
       <p className="goldKicker">SYDNEY'S MOST TRUSTED</p>
       <h1>MY BLACK LIMO SERVICE</h1>
@@ -24,7 +22,7 @@ export default function Home(){return <main className="home masterHomepage">
       <a className="goldButton" href="/quote">BOOK YOUR RIDE →</a>
       <div className="heroFleetChecks"><span>✓ Professional Drivers</span><span>✓ Punctual</span><span>✓ Discreet</span></div>
     </div>
-  </section>
+  </div>
   <section className="amenitiesStrip" aria-label="Complimentary amenities">
     <img src={amenitiesStrip.src} width={amenitiesStrip.width} height={amenitiesStrip.height} alt="Complimentary amenities — water, mints, comfort, charging, wifi, phone holders, sound, live tracking" className="amenitiesStripImage"/>
     {amenityHotspots.map(([name,href,left,width])=><a key={name} href={href} title={name.replaceAll('-',' ')} aria-label={name.replaceAll('-',' ')} className="hotspot" style={{left,top:'0%',width,height:'100%'}} />)}
