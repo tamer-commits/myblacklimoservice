@@ -23,6 +23,50 @@ export default function Home(){return <main className="home masterHomepage">
       <div className="heroFleetChecks"><span>✓ Professional Drivers</span><span>✓ Punctual</span><span>✓ Discreet</span></div>
     </div>
   </div>
+  <section className="instantQuoteSection" aria-label="Get an instant quote">
+    <form className="quotePanel quoteTeaserPanel" action="/quote">
+      <h2>GET AN INSTANT QUOTE</h2>
+      <div className="quoteTeaserLocations">
+        <label>PICKUP LOCATION<input name="pickup" placeholder="Enter pickup location" /></label>
+        <label>DROP-OFF LOCATION<input name="dropoff" placeholder="Enter drop-off location" /></label>
+      </div>
+      <div className="quoteTeaserDetails">
+        <label>DATE<input type="date" name="date" /></label>
+        <label>TIME<input type="time" name="time" /></label>
+        <label>PASSENGERS<select name="passengers" defaultValue="1"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
+        <label>VEHICLE TYPE<select name="vehicle" defaultValue=""><option value="" disabled>Select Vehicle</option><option>V-Class</option><option>S-Class</option><option>Audi Q7</option><option>Sprinter</option></select></label>
+      </div>
+      <div className="quoteTeaserExtras">
+        <p className="quoteTeaserExtrasLabel">EXTRA OPTIONS</p>
+        <div className="quoteTeaserChecks">
+          <label><input type="checkbox" name="childSeat" /> Child Seat <span>$15</span></label>
+          <label><input type="checkbox" name="babySeat" /> Baby Seat <span>$15</span></label>
+          <label><input type="checkbox" name="boosterSeat" /> Booster Seat <span>$15</span></label>
+        </div>
+      </div>
+      <button className="goldButton quoteTeaserButton" type="submit">CALCULATE FARE</button>
+    </form>
+    <div className="refreshmentsPanel">
+      <img src="/mbls-refreshments.jpg" alt="Complimentary refreshments in every My Black Limo Service ride" className="refreshmentsImage" width={900} height={277} loading="lazy" />
+      <div className="refreshmentsContent">
+        <p>COMPLIMENTARY</p>
+        <h2>REFRESHMENTS</h2>
+        <p>IN EVERY RIDE</p>
+      </div>
+      <div className="refreshmentsCaption"><span>Luxury Experience</span><small>by My Black Limo Service</small></div>
+    </div>
+  </section>
+  <section className="premiumServicesSection" aria-label="Our premium services">
+    <h2>OUR PREMIUM SERVICES</h2>
+    <div className="premiumServicesGrid">
+      <a className="premiumServiceTile" href="/services#airport-transfers"><img src="/mbls-service-airport-transfers.jpg" alt="Airport transfers" width={360} height={308} loading="lazy"/><span>AIRPORT TRANSFERS</span></a>
+      <a className="premiumServiceTile" href="/services#weddings"><img src="/mbls-service-weddings.jpg" alt="Weddings" width={360} height={308} loading="lazy"/><span>WEDDINGS</span></a>
+      <a className="premiumServiceTile" href="/services#vip-transfers"><img src="/mbls-service-vip-services.jpg" alt="VIP services" width={360} height={308} loading="lazy"/><span>VIP SERVICES</span></a>
+      <a className="premiumServiceTile" href="/services#corporate-travel"><img src="/mbls-service-corporate-travel.jpg" alt="Corporate travel" width={360} height={308} loading="lazy"/><span>CORPORATE TRAVEL</span></a>
+      <a className="premiumServiceTile" href="/services#as-directed"><img src="/mbls-service-hourly-chauffeur.jpg" alt="Hourly chauffeur" width={360} height={308} loading="lazy"/><span>HOURLY CHAUFFEUR</span></a>
+      <a className="premiumServiceTile" href="/services#events"><img src="/mbls-service-special-events.jpg" alt="Special events" width={360} height={308} loading="lazy"/><span>SPECIAL EVENTS</span></a>
+    </div>
+  </section>
   <section className="amenitiesStrip" aria-label="Complimentary amenities">
     <img src={amenitiesStrip.src} width={amenitiesStrip.width} height={amenitiesStrip.height} alt="Complimentary amenities — water, mints, comfort, charging, wifi, phone holders, sound, live tracking" className="amenitiesStripImage"/>
     {amenityHotspots.map(([name,href,left,width])=><a key={name} href={href} title={name.replaceAll('-',' ')} aria-label={name.replaceAll('-',' ')} className="hotspot" style={{left,top:'0%',width,height:'100%'}} />)}
