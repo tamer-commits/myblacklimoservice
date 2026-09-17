@@ -1,6 +1,7 @@
 import amenitiesStrip from '../mbls-amenities-strip.png';
 import { HERO_IMAGE } from './heroData';
 import AddressAutocomplete from './components/AddressAutocomplete';
+import PickerInput from './components/PickerInput';
 const amenityHotspots=[
   ['water','/amenities#water','0%','16.86%',false],
   ['mints','/amenities#mints','16.86%','10.48%',false],
@@ -32,15 +33,14 @@ export default function Home(){return <main className="home masterHomepage">
         <label>DROP-OFF LOCATION<AddressAutocomplete name="dropoff" placeholder="Enter drop-off location" /></label>
       </div>
       <div className="quoteTeaserDetails">
-        <label>DATE<input type="date" name="date" /></label>
-        <label>TIME<input type="time" name="time" /></label>
+        <label>DATE<PickerInput type="date" name="date" /></label>
+        <label>TIME<PickerInput type="time" name="time" /></label>
         <label>PASSENGERS<select name="passengers" defaultValue="1"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
         <label>VEHICLE TYPE<select name="vehicle" defaultValue=""><option value="" disabled>Select Vehicle</option><option>V-Class</option><option>S-Class</option><option>Audi Q7</option><option>Sprinter</option></select></label>
       </div>
       <div className="quoteTeaserExtras">
         <p className="quoteTeaserExtrasLabel">EXTRA OPTIONS</p>
         <div className="quoteTeaserChecks">
-          <label><input type="checkbox" name="childSeat" /> Child Seat <span>$15</span></label>
           <label><input type="checkbox" name="babySeat" /> Baby Seat <span>$15</span></label>
           <label><input type="checkbox" name="boosterSeat" /> Booster Seat <span>$15</span></label>
         </div>

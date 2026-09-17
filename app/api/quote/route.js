@@ -11,7 +11,7 @@ function round5(n){return Math.ceil(n/5)*5}
 export async function POST(req){
  try{
   const body=await req.json();
-  const {origin,destination,vehicle='V-Class',child=0,baby=0,booster=0,meet=false,returnTrip=false,date='',time=''}=body;
+  const {origin,destination,vehicle='V-Class',baby=0,booster=0,meet=false,returnTrip=false,date='',time=''}=body;
   if(!origin||!destination) return NextResponse.json({error:'Pickup and destination are required.'},{status:400});
   const key=process.env.GOOGLE_MAPS_API_KEY;
   if(!key) return NextResponse.json({error:'Live route pricing is awaiting Google Maps activation.'},{status:503});
@@ -22,7 +22,7 @@ export async function POST(req){
   const distanceComponent=km*p.perKm, timeComponent=minutes*p.perMinute;
   let oneWay=Math.max(p.minimum,p.minimum+distanceComponent+timeComponent);
   const airport=AIRPORT_RX.test(origin)||AIRPORT_RX.test(destination); if(airport) oneWay+=20;
-  oneWay+=Number(child)*15+Number(baby)*20+Number(booster)*10+(meet&&!airport?20:0);
+  oneWay+=Number(baby)*20+Number(booster)*10+(meet&&!airport?20:0);
   const hour=Number((time||'12:00').split(':')[0]); const afterHours=hour<5||hour>=23; if(afterHours) oneWay*=1.15;
   const fare=round5(returnTrip?oneWay*1.9:oneWay);
   return NextResponse.json({km:Number(km.toFixed(1)),minutes:Math.round(minutes),fare,vehicle,currency:'AUD',breakdown:{minimum:p.minimum,distance:Number(distanceComponent.toFixed(2)),time:Number(timeComponent.toFixed(2)),airport,afterHours,returnDiscount:returnTrip?'5%':null},notice:'Indicative fixed quote. Parking, unusual tolls, special-event access and extended waiting may require confirmation.'});
