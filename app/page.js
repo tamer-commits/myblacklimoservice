@@ -1,5 +1,6 @@
 import amenitiesStrip from '../mbls-amenities-strip.png';
 import { HERO_IMAGE } from './heroData';
+import AddressAutocomplete from './components/AddressAutocomplete';
 const amenityHotspots=[
   ['water','/amenities#water','0%','16.86%',false],
   ['mints','/amenities#mints','16.86%','10.48%',false],
@@ -27,8 +28,8 @@ export default function Home(){return <main className="home masterHomepage">
     <form className="quotePanel quoteTeaserPanel" action="/quote">
       <h2>GET AN INSTANT QUOTE</h2>
       <div className="quoteTeaserLocations">
-        <label>PICKUP LOCATION<input name="pickup" placeholder="Enter pickup location" /></label>
-        <label>DROP-OFF LOCATION<input name="dropoff" placeholder="Enter drop-off location" /></label>
+        <label>PICKUP LOCATION<AddressAutocomplete name="pickup" placeholder="Enter pickup location" /></label>
+        <label>DROP-OFF LOCATION<AddressAutocomplete name="dropoff" placeholder="Enter drop-off location" /></label>
       </div>
       <div className="quoteTeaserDetails">
         <label>DATE<input type="date" name="date" /></label>
