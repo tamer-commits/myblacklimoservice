@@ -91,5 +91,4 @@ export default function Home(){return <main className="home masterHomepage">
       <a className="homeOutline mapQuote" href="/quote" target="_blank" rel="noopener noreferrer">GET AN INSTANT QUOTE</a>
     </div>
   </section>
-  <footer className="homeFooter"><div className="footerBrand">MBLS <small>MY BLACK LIMO SERVICE</small></div><a href="tel:+61420770707">+61 420 770 707</a><a href="mailto:info@myblacklimoservice.com">info@myblacklimoservice.com</a><span>Sydney, Australia</span><div className="footerLegal"><a href="/privacy">Privacy Policy</a><a href="/terms">Terms & Conditions</a><a href="/refund">Refund Policy</a></div></footer>
 </main>}
