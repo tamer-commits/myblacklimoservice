@@ -2,6 +2,7 @@ import amenitiesStrip from '../mbls-amenities-strip.png';
 import { HERO_IMAGE } from './heroData';
 import AddressAutocomplete from './components/AddressAutocomplete';
 import PickerInput from './components/PickerInput';
+import Testimonials from './components/Testimonials';
 const amenityHotspots=[
   ['water','/amenities#water','0%','16.86%',false],
   ['mints','/amenities#mints','16.86%','10.48%',false],
@@ -91,4 +92,5 @@ export default function Home(){return <main className="home masterHomepage">
       <a className="homeOutline mapQuote" href="/quote" target="_blank" rel="noopener noreferrer">GET AN INSTANT QUOTE</a>
     </div>
   </section>
+  <Testimonials />
 </main>}
