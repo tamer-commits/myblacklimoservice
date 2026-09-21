@@ -2,7 +2,7 @@ export const metadata={title:'Hourly Chauffeur Rates | My Black Limo Service',de
 const TIERS=['2+ hrs','4+ hrs','6+ hrs','8+ hrs'];
 const RATES=[
  {name:'Executive Sedan',sub:'Mercedes-Benz S-Class',rates:[130,125,120,115]},
- {name:'Executive SUV',sub:'Audi Q7',rates:[170,165,155,150]},
+ {name:'Executive SUV',sub:'Audi Q7',rates:[170,160,155,150]},
  {name:'V-Class',sub:'7-Seater People Mover',rates:[200,195,185,180]},
  {name:'11-Seater',sub:'Mercedes-Benz Sprinter',rates:[265,255,245,235]}
 ];
