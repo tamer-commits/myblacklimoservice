@@ -1,3 +1,4 @@
+export const metadata={title:'Our Services',description:'Airport transfers, VIP transfers, weddings, corporate travel, private charter, school formals and more — explore Sydney chauffeur services from My Black Limo Service.'};
 const items=[
 ['airport-transfers','Airport Transfers','Professional airport pickup and drop-off with punctual chauffeur service, luggage assistance and a smooth transition between your home, office, hotel and terminal.','https://images.unsplash.com/photo-1515569067071-ec3b51335dd0?auto=format&fit=crop&w=1600&q=88'],
 ['vip-transfers','VIP Transfers','Discreet premium transport for VIPs, executives, special guests and high-profile journeys, with comfort, presentation, privacy and security in mind.','https://images.unsplash.com/photo-1780296269675-169390638617?auto=format&fit=crop&w=1600&q=82'],

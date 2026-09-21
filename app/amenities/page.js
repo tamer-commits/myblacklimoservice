@@ -1,4 +1,5 @@
 import amenitiesPremium from '../../mbls-amenities-premium.jpg';
+export const metadata={title:'Amenities',description:'Complimentary water, mints, Wi-Fi, charging and premium comfort — discover the amenities included in every My Black Limo Service chauffeur ride in Sydney.'};
 
 const amenities=[
 ['water','Still & Sparkling Water','Complimentary premium still and sparkling water to keep you refreshed throughout your journey. Our presentation can include recognised premium choices such as Evian and San Pellegrino, subject to vehicle stock.'],

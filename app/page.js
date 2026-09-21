@@ -3,6 +3,7 @@ import { HERO_IMAGE } from './heroData';
 import AddressAutocomplete from './components/AddressAutocomplete';
 import PickerInput from './components/PickerInput';
 import Testimonials from './components/Testimonials';
+export const metadata={title:'Sydney Luxury Chauffeur & Private Transfers',description:"Sydney's premium chauffeur service — airport transfers, corporate travel, weddings and private hire in Mercedes-Benz and Audi vehicles. Get an instant quote."};
 const amenityHotspots=[
   ['water','/amenities#water','0%','16.86%',false],
   ['mints','/amenities#mints','16.86%','10.48%',false],
