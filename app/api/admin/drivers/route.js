@@ -1,26 +1,20 @@
 import { NextResponse } from 'next/server';
 import { dbConfigured, listDrivers, addDriver } from '../../../../lib/db';
+import { authorizedByKeyOrSession } from '../../../../lib/admin';
 
-// Bare-bones driver roster management, protected by a single shared admin
-// key (ADMIN_API_KEY in Vercel env vars) rather than a login system — enough
-// to get real drivers into the round-robin now. A proper dispatcher
-// dashboard with auth is a reasonable follow-up once the core flow is
-// proven out; this keeps that phase unblocked without over-building today.
-function authorized(req){
- const key = process.env.ADMIN_API_KEY;
- if(!key) return false; // fail closed: no key configured means no admin access
- return req.headers.get('x-admin-key') === key;
-}
-
+// Driver roster management. Accepts EITHER the original shared
+// x-admin-key header (ADMIN_API_KEY — kept for any existing automation)
+// OR a logged-in admin session (ADMIN_EMAILS allowlist), so the new /admin
+// UI works without breaking anything that already depends on the key.
 export async function GET(req){
- if(!authorized(req)) return NextResponse.json({ok:false,error:'Unauthorized'},{status:401});
+ if(!(await authorizedByKeyOrSession(req))) return NextResponse.json({ok:false,error:'Unauthorized'},{status:401});
  if(!dbConfigured()) return NextResponse.json({ok:false,error:'Database is not configured yet.'},{status:503});
  const drivers = await listDrivers();
  return NextResponse.json({ ok:true, drivers });
 }
 
 export async function POST(req){
- if(!authorized(req)) return NextResponse.json({ok:false,error:'Unauthorized'},{status:401});
+ if(!(await authorizedByKeyOrSession(req))) return NextResponse.json({ok:false,error:'Unauthorized'},{status:401});
  if(!dbConfigured()) return NextResponse.json({ok:false,error:'Database is not configured yet.'},{status:503});
  try{
   const { name, phone } = await req.json();
