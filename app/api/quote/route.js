@@ -6,7 +6,10 @@ const PRICING={
  'Audi Q7':{minimum:110,perKm:3.20,perMinute:.69},
  'Sprinter':{minimum:155,perKm:4.10,perMinute:.82}
 };
-const AIRPORT_RX=/sydney airport|kingsford smith|\bSYD\b/i;
+// Exported so app/api/booking/route.js and the /quote client page can reuse
+// the exact same airport detection to decide whether a flight number is
+// required, instead of duplicating/drifting from this regex.
+export const AIRPORT_RX=/sydney airport|kingsford smith|\bSYD\b/i;
 function round5(n){return Math.ceil(n/5)*5}
 export async function POST(req){
  try{

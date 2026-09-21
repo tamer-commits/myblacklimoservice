@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
-import { dbConfigured, insertBooking } from '../../../lib/db';
+import { dbConfigured, insertBooking, getUserById } from '../../../lib/db';
 import { runDispatchForBooking, sendCustomerBookingConfirmation } from '../../../lib/dispatch';
 import { sydneyLocalToUtc } from '../../../lib/time';
+import { toE164 } from '../../../lib/notify';
+import { getSessionFromRequest, verifyVerificationToken } from '../../../lib/session';
+import { AIRPORT_RX } from '../quote/route';
 
 function clean(v,max=500){return String(v??'').trim().slice(0,max)}
 async function createSquareCheckout(booking){
@@ -26,9 +29,12 @@ async function persistAndDispatch(booking){
   const pickupAt = sydneyLocalToUtc(booking.date, booking.time);
   const row = await insertBooking({
    reference: booking.reference,
+   userId: booking.userId,
    name: booking.name,
    email: booking.email,
    phone: booking.phone,
+   secondPhone: booking.secondPhone,
+   flightNumber: booking.flightNumber,
    origin: booking.origin,
    destination: booking.destination,
    pickupAt,
@@ -47,15 +53,56 @@ async function persistAndDispatch(booking){
  }
 }
 
+// Mandatory-field / verification policy (whether the customer is logged in
+// or booking as a guest): destination, primary phone (OTP-verified),
+// second phone (never OTP-verified), and email (OTP-verified) are always
+// required. Flight number is required only when the trip involves a Sydney
+// Airport pickup or drop-off. A logged-in account whose phone/email are
+// already verified from signup skips re-verification at booking time and
+// just reuses those; a guest (or a logged-in customer entering a different
+// email/phone than their account's) must prove a fresh OTP check via
+// /api/otp/start + /api/otp/check (purpose 'booking_email'/'booking_phone'),
+// whose short-lived signed token is submitted here as
+// emailVerifyToken/phoneVerifyToken.
 export async function POST(req){
  try{
   const raw=await req.json();
-  const b={name:clean(raw.name,100),email:clean(raw.email,160),phone:clean(raw.phone,40),origin:clean(raw.origin,250),destination:clean(raw.destination,250),date:clean(raw.date,20),time:clean(raw.time,20),vehicle:clean(raw.vehicle,40),passengers:Math.max(1,Math.min(24,Number(raw.passengers)||1)),baby:Math.max(0,Number(raw.baby)||0),booster:Math.max(0,Number(raw.booster)||0),meet:Boolean(raw.meet),returnTrip:Boolean(raw.returnTrip),notes:clean(raw.notes,1000),quotedFare:Math.max(0,Number(raw.quotedFare)||0),routeKm:Math.max(0,Number(raw.routeKm)||0),routeMinutes:Math.max(0,Number(raw.routeMinutes)||0)};
-  if(!b.name||!b.email||!b.phone||!b.origin||!b.destination||!b.date||!b.time) return NextResponse.json({error:'Please complete your contact, date, time and journey details.'},{status:400});
+  const b={name:clean(raw.name,100),email:clean(raw.email,160),phone:clean(raw.phone,40),secondPhone:clean(raw.secondPhone,40),flightNumber:clean(raw.flightNumber,20),origin:clean(raw.origin,250),destination:clean(raw.destination,250),date:clean(raw.date,20),time:clean(raw.time,20),vehicle:clean(raw.vehicle,40),passengers:Math.max(1,Math.min(24,Number(raw.passengers)||1)),baby:Math.max(0,Number(raw.baby)||0),booster:Math.max(0,Number(raw.booster)||0),meet:Boolean(raw.meet),returnTrip:Boolean(raw.returnTrip),notes:clean(raw.notes,1000),quotedFare:Math.max(0,Number(raw.quotedFare)||0),routeKm:Math.max(0,Number(raw.routeKm)||0),routeMinutes:Math.max(0,Number(raw.routeMinutes)||0)};
+
+  if(!b.name||!b.email||!b.phone||!b.secondPhone||!b.origin||!b.destination||!b.date||!b.time) return NextResponse.json({error:'Please complete your contact, date, time and journey details, including a second phone number.'},{status:400});
   if(!/^\S+@\S+\.\S+$/.test(b.email)) return NextResponse.json({error:'Please enter a valid email address.'},{status:400});
   if(!b.quotedFare||!b.routeKm) return NextResponse.json({error:'Please calculate the live route before booking.'},{status:400});
+
+  const airportInvolved = AIRPORT_RX.test(b.origin) || AIRPORT_RX.test(b.destination);
+  if(airportInvolved && !b.flightNumber) return NextResponse.json({error:'Please provide your flight number — this trip involves a Sydney Airport pickup or drop-off.'},{status:400});
+
+  const emailLower = b.email.toLowerCase();
+  const phoneE164 = toE164(b.phone);
+
+  let sessionUser = null;
+  if(dbConfigured()){
+   const session = getSessionFromRequest(req);
+   if(session) sessionUser = await getUserById(session.userId);
+  }
+
+  const accountEmailVerified = Boolean(sessionUser && sessionUser.email_verified_at && sessionUser.email === emailLower);
+  const accountPhoneVerified = Boolean(sessionUser && sessionUser.phone_verified_at && sessionUser.phone === phoneE164);
+
+  if(!accountEmailVerified){
+   const tok = verifyVerificationToken(String(raw.emailVerifyToken||''));
+   if(!tok || tok.channel!=='email' || tok.purpose!=='booking_email' || tok.identifier!==emailLower){
+    return NextResponse.json({error:'Please verify your email address with the code we sent before booking.',code:'email_not_verified'},{status:400});
+   }
+  }
+  if(!accountPhoneVerified){
+   const tok = verifyVerificationToken(String(raw.phoneVerifyToken||''));
+   if(!tok || tok.channel!=='phone' || tok.purpose!=='booking_phone' || tok.identifier!==phoneE164){
+    return NextResponse.json({error:'Please verify your mobile number with the code we sent before booking.',code:'phone_not_verified'},{status:400});
+   }
+  }
+
   const reference=`MBL-${Date.now().toString().slice(-8)}`,receivedAt=new Date().toISOString();
-  const booking={reference,status:'AWAITING_PAYMENT',...b,receivedAt};
+  const booking={reference,status:'AWAITING_PAYMENT',...b,userId: sessionUser?.id || null,receivedAt};
   let paymentUrl=null,paymentError=null;
   try{paymentUrl=await createSquareCheckout(booking)}catch(e){paymentError=e.message;console.error('SQUARE_CHECKOUT_ERROR',reference,e)}
   if(!paymentUrl) booking.status='AWAITING_MANUAL_CONFIRMATION';

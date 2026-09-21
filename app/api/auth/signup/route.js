@@ -23,6 +23,9 @@ export async function POST(req){
  const phoneRaw = String(body.phone || '').trim();
  const whatsappSameAsMobile = body.whatsappSameAsMobile !== false;
  const whatsappNumberRaw = whatsappSameAsMobile ? '' : String(body.whatsappNumber || '').trim();
+ // Optional second contact number, saved to the account so it can prefill
+ // the mandatory "second phone" field on future bookings.
+ const secondPhoneRaw = String(body.secondPhone || '').trim();
 
  if(fullName.length < 2) return NextResponse.json({ ok:false, error:'Please enter your full name.' }, { status:400 });
  if(!EMAIL_RE.test(email)) return NextResponse.json({ ok:false, error:'Please enter a valid email address.' }, { status:400 });
@@ -30,9 +33,13 @@ export async function POST(req){
  if(!whatsappSameAsMobile && whatsappNumberRaw.replace(/\D/g,'').length < 8){
   return NextResponse.json({ ok:false, error:'Please enter a valid WhatsApp number, or tick that it’s the same as your mobile.' }, { status:400 });
  }
+ if(secondPhoneRaw && secondPhoneRaw.replace(/\D/g,'').length < 8){
+  return NextResponse.json({ ok:false, error:'Please enter a valid second phone number, or leave it blank.' }, { status:400 });
+ }
 
  const phone = toE164(phoneRaw);
  const whatsappNumber = whatsappSameAsMobile ? null : toE164(whatsappNumberRaw);
+ const secondPhone = secondPhoneRaw ? toE164(secondPhoneRaw) : null;
 
  const [existingByEmail, existingByPhone] = await Promise.all([getUserByEmail(email), getUserByPhone(phone)]);
  if(existingByEmail) return NextResponse.json({ ok:false, error:'An account already exists with that email. Try logging in instead.', code:'email_taken' }, { status:409 });
@@ -42,12 +49,16 @@ export async function POST(req){
 
  const [emailResult, phoneResult] = await Promise.all([
   startEmailOtp(email, 'signup_email'),
+  // No explicit purpose: phone OTP keeps a single shared lane across
+  // signup/login (see lib/phone-otp.js), so signup/verify-phone's
+  // checkPhoneOtp(phone, code) call — with no purpose argument either —
+  // still matches this code.
   startPhoneOtp(phone),
  ]);
  if(!emailResult.ok) return NextResponse.json({ ok:false, error:'Could not send the email verification code. Please try again.', detail: emailResult.reason }, { status:502 });
  if(!phoneResult.ok) return NextResponse.json({ ok:false, error:'Could not send the SMS verification code. Please try again.', detail: phoneResult.reason }, { status:502 });
 
- const pendingToken = signPendingSignup({ fullName, email, phone, whatsappSameAsMobile, whatsappNumber, emailVerified:false, phoneVerified:false });
+ const pendingToken = signPendingSignup({ fullName, email, phone, whatsappSameAsMobile, whatsappNumber, secondPhone, emailVerified:false, phoneVerified:false });
 
  const res = NextResponse.json({ ok:true });
  res.headers.append('Set-Cookie', pendingSignupCookieHeader(pendingToken));

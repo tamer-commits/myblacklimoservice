@@ -20,6 +20,7 @@ export async function completeSignupIfReady(pending){
   phoneVerifiedAt: new Date().toISOString(),
   whatsappNumber: pending.whatsappNumber || null,
   whatsappSameAsMobile: pending.whatsappSameAsMobile !== false,
+  secondPhone: pending.secondPhone || null,
   googleId: pending.googleId || null,
   avatarUrl: pending.avatarUrl || null,
  });
@@ -36,7 +37,10 @@ export function publicUser(user){
   id: user.id,
   fullName: user.full_name,
   email: user.email,
+  emailVerified: Boolean(user.email_verified_at),
   phone: user.phone,
+  phoneVerified: Boolean(user.phone_verified_at),
+  secondPhone: user.second_phone,
   whatsappNumber: user.whatsapp_number,
   whatsappSameAsMobile: user.whatsapp_same_as_mobile,
   avatarUrl: user.avatar_url,
