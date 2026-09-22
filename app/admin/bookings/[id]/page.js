@@ -13,7 +13,7 @@ const REASON_LABELS = {
  no_active_driver: 'No driver available',
  no_backup_driver_at_50m: 'No backup driver at T-50m',
  driver_unconfirmed_after_reassignment: 'Reassigned driver unconfirmed',
- customer_unconfirmed_1h_before_pickup: 'Customer unconfirmed at T-1h',
+ customer_unconfirmed_2h_before_pickup: 'Customer unconfirmed at T-2h',
 };
 
 function humanizeReason(reason){

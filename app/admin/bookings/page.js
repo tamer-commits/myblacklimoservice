@@ -34,12 +34,71 @@ const REASON_LABELS = {
  no_active_driver: 'No driver available',
  no_backup_driver_at_50m: 'No backup driver at T-50m',
  driver_unconfirmed_after_reassignment: 'Reassigned driver unconfirmed',
- customer_unconfirmed_1h_before_pickup: 'Customer unconfirmed at T-1h',
+ customer_unconfirmed_2h_before_pickup: 'Customer unconfirmed at T-2h',
 };
 
 function humanizeReason(reason){
  if(!reason) return '';
  return reason.split(';').map(r => r.trim()).filter(Boolean).map(r => REASON_LABELS[r] || r).join(' · ');
+}
+
+// Independent of the status filter below — always shows every booking that
+// needs a human right now, everywhere in the system, so a filter selection
+// on the main table can never hide an urgent case from view.
+function useNeedsAttention(){
+ const [items, setItems] = useState([]);
+ const [loading, setLoading] = useState(true);
+ useEffect(() => {
+  fetch('/api/admin/bookings').then(r=>r.json()).then(d => {
+   if(!d.ok) return;
+   const flagged = (d.bookings || []).filter(b => b.needs_manual_dispatch);
+   flagged.sort((a,b) => new Date(a.pickup_at) - new Date(b.pickup_at)); // soonest pickup first
+   setItems(flagged);
+  }).catch(() => {}).finally(() => setLoading(false));
+ }, []);
+ return { items, loading };
+}
+
+function NeedsAttentionBanner(){
+ const { items, loading } = useNeedsAttention();
+ if(loading || items.length === 0) return null;
+ return (
+  <div style={{
+   border:'2px solid #e0763f',
+   borderRadius:8,
+   padding:'16px 20px',
+   marginBottom:24,
+   background:'rgba(224,118,63,0.08)',
+  }}>
+   <p style={{margin:'0 0 10px', fontWeight:700, color:'#e0763f', fontSize:14, letterSpacing:'.03em', textTransform:'uppercase'}}>
+    Needs attention — {items.length} booking{items.length === 1 ? '' : 's'} require manual dispatch
+   </p>
+   <div style={{overflowX:'auto'}}>
+    <table style={{width:'100%', borderCollapse:'collapse', fontSize:13}}>
+     <thead>
+      <tr style={{textAlign:'left', color:'#e0a37b', textTransform:'uppercase', fontSize:11}}>
+       <th style={{padding:'6px'}}>Pickup</th>
+       <th style={{padding:'6px'}}>Reference</th>
+       <th style={{padding:'6px'}}>Customer</th>
+       <th style={{padding:'6px'}}>Driver</th>
+       <th style={{padding:'6px'}}>Reason</th>
+      </tr>
+     </thead>
+     <tbody>
+      {items.map(b => (
+       <tr key={b.id} style={{borderTop:'1px solid rgba(224,118,63,0.3)'}}>
+        <td style={{padding:'8px 6px', whiteSpace:'nowrap', fontWeight:600}}>{b.pickup_at ? new Date(b.pickup_at).toLocaleString('en-AU',{timeZone:'Australia/Sydney',dateStyle:'medium',timeStyle:'short'}) : '—'}</td>
+        <td style={{padding:'8px 6px'}}><a href={`/admin/bookings/${b.id}`} style={{color:'#d9a526'}}>{b.reference}</a></td>
+        <td style={{padding:'8px 6px'}}>{b.name}<br/><span style={{color:'#888', fontSize:12}}>{b.phone}</span></td>
+        <td style={{padding:'8px 6px'}}>{b.driver_name || 'Unassigned'}</td>
+        <td style={{padding:'8px 6px', color:'#e0a37b'}}>{humanizeReason(b.manual_dispatch_reason)}</td>
+       </tr>
+      ))}
+     </tbody>
+    </table>
+   </div>
+  </div>
+ );
 }
 
 function BookingsInner(){
@@ -71,6 +130,7 @@ function BookingsInner(){
     <h1>Bookings</h1>
    </section>
    <section className="quoteWorkspace" style={{gridTemplateColumns:'1fr', maxWidth:1200}}>
+    <NeedsAttentionBanner />
     <div className="quotePanel">
      <div style={{display:'flex', gap:10, alignItems:'center', marginBottom:20}}>
       <label style={{fontSize:11, color:'#aaa'}}>STATUS
