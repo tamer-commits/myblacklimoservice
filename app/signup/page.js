@@ -66,7 +66,7 @@ export default function SignupPage(){
        <label>FULL NAME<input required value={fullName} onChange={e=>setFullName(e.target.value)} placeholder="Your full name"/></label>
        <label>EMAIL<input required type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com"/></label>
        <label>MOBILE<input required value={phone} onChange={e=>setPhone(e.target.value)} placeholder="04xx xxx xxx"/></label>
-       <label>SECOND PHONE <span style={{color:'#888',fontWeight:400}}>(optional)</span><input value={secondPhone} onChange={e=>setSecondPhone(e.target.value)} placeholder="Alternate contact number"/></label>
+       <label>SECOND PHONE <span style={{color:'#888',fontWeight:400}}>(important for airport pickup)</span><input value={secondPhone} onChange={e=>setSecondPhone(e.target.value)} placeholder="Alternate contact number"/></label>
        <button className="goldButton button" type="submit" disabled={busy}>{busy ? 'SENDING CODES…' : 'CREATE ACCOUNT'}</button>
        {status && <p className="status">{status}</p>}
        <p className="status">Already have an account? <a href="/login">Log in</a></p>
