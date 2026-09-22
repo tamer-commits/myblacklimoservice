@@ -6,6 +6,11 @@ const STATUS_FILTERS = ['', 'AWAITING_PAYMENT', 'AWAITING_MANUAL_CONFIRMATION', 
 
 function SourceBadge({ source }){
  const isWhatsApp = source === 'whatsapp';
+ const isSms = source === 'sms';
+ const label = isWhatsApp ? 'WhatsApp' : isSms ? 'SMS' : 'Web';
+ const background = isWhatsApp ? '#25D366' : isSms ? '#3a7bd5' : '#2a2a2a';
+ const color = isWhatsApp ? '#0b1f14' : isSms ? '#f4f8ff' : '#ccc';
+ const border = isWhatsApp || isSms ? 'none' : '1px solid #3a3a3a';
  return (
   <span style={{
    display: 'inline-block',
@@ -14,11 +19,11 @@ function SourceBadge({ source }){
    fontSize: 11,
    fontWeight: 600,
    letterSpacing: '.02em',
-   color: isWhatsApp ? '#0b1f14' : '#ccc',
-   background: isWhatsApp ? '#25D366' : '#2a2a2a',
-   border: isWhatsApp ? 'none' : '1px solid #3a3a3a',
+   color,
+   background,
+   border,
   }}>
-   {isWhatsApp ? 'WhatsApp' : 'Web'}
+   {label}
   </span>
  );
 }
