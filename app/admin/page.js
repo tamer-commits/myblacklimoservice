@@ -44,6 +44,7 @@ function DashboardInner(){
       <a className="goldButton button" href="/admin/bookings">BOOKINGS</a>
       <a className="outlineButton" href="/admin/customers">CUSTOMERS</a>
       <a className="outlineButton" href="/admin/drivers">DRIVERS</a>
+      <a className="outlineButton" href="/admin/map">LIVE MAP</a>
      </div>
     </div>
    </section>

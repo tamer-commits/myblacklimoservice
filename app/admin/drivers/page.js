@@ -10,6 +10,7 @@ function DriversInner(){
  const [phone, setPhone] = useState('');
  const [busy, setBusy] = useState(false);
  const [addErr, setAddErr] = useState('');
+ const [linkBusyId, setLinkBusyId] = useState(null);
 
  function load(){
   setLoading(true);
@@ -42,6 +43,22 @@ function DriversInner(){
   }catch(err){ setErr(err.message); }
  }
 
+ async function copyLocationLink(driver){
+  setLinkBusyId(driver.id);
+  try{
+   const r = await fetch(`/api/admin/drivers/${driver.id}/location-link`);
+   const d = await r.json();
+   if(!r.ok || !d.ok) throw new Error(d.error || 'Unable to get link.');
+   if(typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText){
+    await navigator.clipboard.writeText(d.url);
+    window.alert(`Location-sharing link copied. Send it to ${driver.name} by SMS/WhatsApp:\n\n${d.url}`);
+   }else{
+    window.prompt(`Copy this location-sharing link and send it to ${driver.name}:`, d.url);
+   }
+  }catch(err){ setErr(err.message); }
+  finally{ setLinkBusyId(null); }
+ }
+
  return (
   <main className="innerPage">
    <section className="quoteIntro">
@@ -63,6 +80,7 @@ function DriversInner(){
           <th style={{padding:'8px 6px'}}>Phone</th>
           <th style={{padding:'8px 6px'}}>Status</th>
           <th style={{padding:'8px 6px'}}></th>
+          <th style={{padding:'8px 6px'}}></th>
          </tr>
         </thead>
         <tbody>
@@ -74,6 +92,11 @@ function DriversInner(){
            <td style={{padding:'10px 6px'}}>
             <button className="outlineButton" style={{padding:'6px 14px', fontSize:10}} onClick={()=>toggleActive(d)}>
              {d.active ? 'DEACTIVATE' : 'ACTIVATE'}
+            </button>
+           </td>
+           <td style={{padding:'10px 6px'}}>
+            <button className="outlineButton" style={{padding:'6px 14px', fontSize:10}} disabled={linkBusyId === d.id} onClick={()=>copyLocationLink(d)}>
+             {linkBusyId === d.id ? 'GETTING LINK…' : 'LOCATION LINK'}
             </button>
            </td>
           </tr>
@@ -91,6 +114,9 @@ function DriversInner(){
       <button className="goldButton button" type="submit" disabled={busy}>{busy ? 'ADDING…' : 'ADD DRIVER'}</button>
       {addErr && <p className="status">{addErr}</p>}
      </form>
+     <p style={{color:'#888', fontSize:12, marginTop:20}}>
+      Use LOCATION LINK to get a driver's personal location-sharing page, then send it to them by SMS or WhatsApp. They open it, tap "Share my location" while on shift, and their position appears on the Live Map.
+     </p>
     </div>
    </section>
   </main>
