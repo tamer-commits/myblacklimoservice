@@ -47,6 +47,8 @@ export default function LoginPage(){
        <label>EMAIL OR MOBILE<input required value={identifier} onChange={e=>setIdentifier(e.target.value)} placeholder="you@example.com or 04xx xxx xxx"/></label>
        <button className="goldButton button" type="submit" disabled={busy}>{busy ? 'SENDING CODE…' : 'SEND CODE'}</button>
        {status && <p className="status">{status}</p>}
+       <p className="status" style={{textAlign:'center',margin:'6px 0'}}>— OR —</p>
+       <a className="outlineButton" href="/api/auth/google/start" style={{textAlign:'center',display:'block'}}>CONTINUE WITH GOOGLE</a>
        <p className="status">New here? <a href="/signup">Create an account</a></p>
       </form>
      )}

@@ -69,6 +69,8 @@ export default function SignupPage(){
        <label>SECOND PHONE <span style={{color:'#888',fontWeight:400}}>(important for airport pickup)</span><input value={secondPhone} onChange={e=>setSecondPhone(e.target.value)} placeholder="Alternate contact number"/></label>
        <button className="goldButton button" type="submit" disabled={busy}>{busy ? 'SENDING CODES…' : 'CREATE ACCOUNT'}</button>
        {status && <p className="status">{status}</p>}
+       <p className="status" style={{textAlign:'center',margin:'6px 0'}}>— OR —</p>
+       <a className="outlineButton" href="/api/auth/google/start" style={{textAlign:'center',display:'block'}}>CONTINUE WITH GOOGLE</a>
        <p className="status">Already have an account? <a href="/login">Log in</a></p>
       </form>
      )}
