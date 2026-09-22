@@ -2,7 +2,26 @@
 import { useEffect, useState } from 'react';
 import AdminGate from '../AdminGate';
 
-const STATUS_FILTERS = ['', 'AWAITING_PAYMENT', 'AWAITING_MANUAL_CONFIRMATION', 'AWAITING_CONFIRMATION', 'CONFIRMED', 'COMPLETED', 'CANCELLED'];
+const STATUS_FILTERS = ['', 'AWAITING_PAYMENT', 'AWAITING_MANUAL_CONFIRMATION', 'AWAITING_MANUAL_QUOTE', 'AWAITING_CONFIRMATION', 'CONFIRMED', 'COMPLETED', 'CANCELLED'];
+
+function SourceBadge({ source }){
+ const isWhatsApp = source === 'whatsapp';
+ return (
+  <span style={{
+   display: 'inline-block',
+   padding: '2px 8px',
+   borderRadius: 999,
+   fontSize: 11,
+   fontWeight: 600,
+   letterSpacing: '.02em',
+   color: isWhatsApp ? '#0b1f14' : '#ccc',
+   background: isWhatsApp ? '#25D366' : '#2a2a2a',
+   border: isWhatsApp ? 'none' : '1px solid #3a3a3a',
+  }}>
+   {isWhatsApp ? 'WhatsApp' : 'Web'}
+  </span>
+ );
+}
 
 function BookingsInner(){
  const [bookings, setBookings] = useState([]);
@@ -50,6 +69,7 @@ function BookingsInner(){
         <thead>
          <tr style={{textAlign:'left', color:'#999', textTransform:'uppercase', fontSize:11}}>
           <th style={{padding:'8px 6px'}}>Reference</th>
+          <th style={{padding:'8px 6px'}}>Source</th>
           <th style={{padding:'8px 6px'}}>Customer</th>
           <th style={{padding:'8px 6px'}}>Route</th>
           <th style={{padding:'8px 6px'}}>Pickup</th>
@@ -63,6 +83,7 @@ function BookingsInner(){
          {bookings.map(b => (
           <tr key={b.id} style={{borderTop:'1px solid #2a2a2a'}}>
            <td style={{padding:'10px 6px'}}><a href={`/admin/bookings/${b.id}`} style={{color:'#d9a526'}}>{b.reference}</a></td>
+           <td style={{padding:'10px 6px'}}><SourceBadge source={b.source} /></td>
            <td style={{padding:'10px 6px'}}>{b.name}<br/><span style={{color:'#888', fontSize:12}}>{b.phone}</span></td>
            <td style={{padding:'10px 6px', maxWidth:220}}>{b.origin} → {b.destination}</td>
            <td style={{padding:'10px 6px', whiteSpace:'nowrap'}}>{b.pickup_at ? new Date(b.pickup_at).toLocaleString('en-AU',{timeZone:'Australia/Sydney',dateStyle:'medium',timeStyle:'short'}) : ''}</td>
