@@ -9,16 +9,32 @@ function fmt(ts){
  catch{ return String(ts); }
 }
 
+const REASON_LABELS = {
+ no_active_driver: 'No driver available',
+ no_backup_driver_at_50m: 'No backup driver at T-50m',
+ driver_unconfirmed_after_reassignment: 'Reassigned driver unconfirmed',
+ customer_unconfirmed_1h_before_pickup: 'Customer unconfirmed at T-1h',
+};
+
+function humanizeReason(reason){
+ if(!reason) return '';
+ return reason.split(';').map(r => r.trim()).filter(Boolean).map(r => REASON_LABELS[r] || r).join(' · ');
+}
+
 const CHECKPOINTS = [
- ['customer_confirmation_sent_at', 'Customer confirmation sent'],
+ ['customer_confirmation_sent_at', 'Booking confirmation sent'],
  ['driver_confirm_24h_sent_at', 'Driver 24h confirm request sent'],
  ['driver_confirmed_24h_at', 'Driver confirmed (24h)'],
  ['driver_confirm_90m_sent_at', 'Driver 90m confirm request sent'],
- ['driver_confirmed_90m_at', 'Driver confirmed (90m)'],
+ ['driver_confirmed_90m_at', 'Driver confirmed (current assignment)'],
  ['driver_call_75m_sent_at', 'Driver 75m confirmation call'],
- ['reassigned_60m_at', 'Reassigned at 60m'],
- ['customer_reminder_90m_sent_at', 'Customer reminder (90m)'],
- ['customer_reminder_60m_sent_at', 'Customer reminder (60m)'],
+ ['reassigned_50m_at', 'Reassigned at T-50m (final opportunity)'],
+ ['driver_manual_dispatch_at', 'Driver-side management alert sent'],
+ ['customer_confirm_48h_sent_at', 'Customer 48h confirm/reminder sent'],
+ ['customer_confirm_24h_sent_at', 'Customer 24h confirm/reminder sent'],
+ ['customer_confirm_2h_sent_at', 'Customer 2h confirm/reminder sent'],
+ ['customer_confirmed_at', 'Customer confirmed'],
+ ['customer_manual_dispatch_at', 'Customer-side management alert sent'],
 ];
 
 function BookingDetailInner(){
@@ -84,7 +100,11 @@ function BookingDetailInner(){
      {booking.notes && <p><b>Notes:</b> {booking.notes}</p>}
      <p><b>Current status:</b> {booking.status}</p>
      <p><b>Assigned driver:</b> {booking.driver_name ? `${booking.driver_name} (${booking.driver_phone})` : 'Unassigned'}</p>
-     {booking.needs_manual_dispatch && <p className="status" style={{color:'#e0763f'}}>Needs manual dispatch.</p>}
+     {booking.needs_manual_dispatch && (
+      <p className="status" style={{color:'#e0763f', fontWeight:600}}>
+       Needs manual dispatch{booking.manual_dispatch_reason ? `: ${humanizeReason(booking.manual_dispatch_reason)}` : ''}.
+      </p>
+     )}
 
      <h2>Dispatch checkpoints</h2>
      <table style={{width:'100%', borderCollapse:'collapse', fontSize:13}}>

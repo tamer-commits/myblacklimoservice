@@ -28,6 +28,20 @@ function SourceBadge({ source }){
  );
 }
 
+// Turns the short machine-readable reason codes flagManualDispatch() writes
+// (lib/db.js) into something a non-technical reader understands at a glance.
+const REASON_LABELS = {
+ no_active_driver: 'No driver available',
+ no_backup_driver_at_50m: 'No backup driver at T-50m',
+ driver_unconfirmed_after_reassignment: 'Reassigned driver unconfirmed',
+ customer_unconfirmed_1h_before_pickup: 'Customer unconfirmed at T-1h',
+};
+
+function humanizeReason(reason){
+ if(!reason) return '';
+ return reason.split(';').map(r => r.trim()).filter(Boolean).map(r => REASON_LABELS[r] || r).join(' · ');
+}
+
 function BookingsInner(){
  const [bookings, setBookings] = useState([]);
  const [status, setStatus] = useState('');
@@ -93,7 +107,15 @@ function BookingsInner(){
            <td style={{padding:'10px 6px', maxWidth:220}}>{b.origin} → {b.destination}</td>
            <td style={{padding:'10px 6px', whiteSpace:'nowrap'}}>{b.pickup_at ? new Date(b.pickup_at).toLocaleString('en-AU',{timeZone:'Australia/Sydney',dateStyle:'medium',timeStyle:'short'}) : ''}</td>
            <td style={{padding:'10px 6px'}}>{b.vehicle || '—'}</td>
-           <td style={{padding:'10px 6px'}}>{b.status}{b.needs_manual_dispatch && <div style={{color:'#e0763f', fontSize:11}}>NEEDS DISPATCH</div>}</td>
+           <td style={{padding:'10px 6px'}}>
+            {b.status}
+            {b.needs_manual_dispatch && (
+             <div style={{color:'#e0763f', fontSize:11, fontWeight:600, marginTop:2}}>
+              NEEDS DISPATCH
+              {b.manual_dispatch_reason && <div style={{color:'#e0a37b', fontWeight:400}}>{humanizeReason(b.manual_dispatch_reason)}</div>}
+             </div>
+            )}
+           </td>
            <td style={{padding:'10px 6px'}}>{b.driver_name || '—'}</td>
            <td style={{padding:'10px 6px'}}>{b.quoted_fare ? `$${Number(b.quoted_fare).toFixed(0)}` : '—'}</td>
           </tr>
