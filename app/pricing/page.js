@@ -1,4 +1,4 @@
-export const metadata={title:'Hourly Chauffeur Rates | My Black Limo Service',description:'Published as-directed hourly chauffeur hire rates for Sydney — Executive Sedan, Executive SUV, V-Class and 11-Seater Sprinter.'};
+export const metadata={title:'Hourly Chauffeur Rates',description:'Published as-directed hourly chauffeur hire rates for Sydney — Executive Sedan, Executive SUV, V-Class and 11-Seater Sprinter.'};
 const TIERS=['2+ hrs','4+ hrs','6+ hrs','8+ hrs'];
 const RATES=[
  {name:'Executive Sedan',sub:'Mercedes-Benz S-Class',rates:[130,125,120,115]},
