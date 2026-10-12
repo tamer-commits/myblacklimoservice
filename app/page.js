@@ -1,5 +1,5 @@
 import amenitiesStrip from '../mbls-amenities-strip.png';
-import { HERO_IMAGE } from './heroData';
+import LacquerHero from './components/LacquerHero';
 import AddressAutocomplete from './components/AddressAutocomplete';
 import PickerInput from './components/PickerInput';
 import Testimonials from './components/Testimonials';
@@ -17,7 +17,7 @@ const amenityHotspots=[
 const services=[ ['Airport Transfers','/services#airport-transfers'],['VIP Transfers','/services#vip-transfers'],['Weddings','/services#weddings'],['Private Charter','/services#private-charter'],['Corporate Travel','/services#corporate-travel'],['Events & Occasions','/services#events'],['School Formals','/services#formal'],['As Directed','/services#as-directed'],['Women for Women','/services#women-for-women'] ];
 export default function Home(){return <main className="home masterHomepage">
   <div className="masterTop">
-    <img className="masterImage" src={HERO_IMAGE} alt="My Black Limo Service fleet — Mercedes-Benz and Audi vehicles on Sydney Harbour" width={1536} height={512} loading="eager" />
+    <LacquerHero alt="My Black Limo Service fleet — Mercedes-Benz and Audi vehicles on Sydney Harbour" />
     <div className="heroFleetText">
       <p className="goldKicker">SYDNEY'S MOST TRUSTED</p>
       <h1>MY BLACK LIMO SERVICE</h1>
